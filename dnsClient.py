@@ -14,7 +14,7 @@ import dns.rdataclass
 def dns_query(type, name, server):
     # Create a UDP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    server_address = (server, 53) # Enter Port Number
+    server_address = (server, 1053) # Enter Port Number
 
     # Create the DNS query
     ID = 0x1234
@@ -84,7 +84,8 @@ def dns_query(type, name, server):
         # 2. nyu (length of 3)
         # 3. edu (length of 3)
         
-    qname_parts = name.split('.') # How can we easily split the string?
+    #qname_parts = name.split('.') # How can we easily split the string?
+    qname_parts = name.rstrip('.').split('.')
     qname_encoded_parts = [struct.pack('B', len(part)) + part.encode('ascii') for part in qname_parts] # Make sure it's encoded as a sequence of the right character encoding type (lowercase)
     qname_encoded = b''.join(qname_encoded_parts) + b'\x00' #enter the closing byte value to signify the end of the domain string (two digits)
 
@@ -92,15 +93,18 @@ def dns_query(type, name, server):
 
     if type == 'A':
         qtype = dns.rdatatype.A    # Lookup the Resource Record value
+        #qtype = 1
     elif type == 'AAAA':
         qtype = dns.rdatatype.AAAA    # Lookup the Resource Record value
+        #qtype = 28
     else:
         raise ValueError('Invalid type')
     
 
     qclass = dns.rdataclass.IN    # Lookup the Resource Record class being requested
+    #qclass = 1
 
-        # This is the query we are asking the DNS Server
+    # This is the query we are asking the DNS Server
     question = qname_encoded + struct.pack('!HH', qtype, qclass)
 
     # Send the query to the server, remember we must always include our header alongside the question!
@@ -118,7 +122,7 @@ def dns_query(type, name, server):
     ID, FLAGS, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT = struct.unpack('!HHHHHH', response_header) # We are unpacking the binary data of the response header into individual values representing the fields of the DNS header.
     
     # Parse the response question section (same as query)
-    response_question = data[12:12+len(question)] # The data variable starts immediately after the header section, so what is it's index? Note the two '??' '??' will be the same value as we start at a specific index and then go for the entire length of the binary data received.
+    response_question = data[12:12+len(question)] # The data variable starts immediately after the header section, so what is its index? Note the two '??' '??' will be the same value as we start at a specific index and then go for the entire length of the binary data received.
     assert response_question == question
 
     # Parse the response answer section

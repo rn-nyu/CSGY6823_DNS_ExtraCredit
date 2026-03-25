@@ -73,19 +73,7 @@ def dns_query(type, name, server):
         
         # Example: The QR field is located in the second byte of the DNS header, with its most significant bit being the leftmost bit of this byte. Since each byte contains 8 bits, shifting the value of the QR field left by 15 bits moves it to the correct position in the 16-bit value that represents the combination of several fields in the DNS header.
 
-    #header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 11 | AA << 10 | TC << 9 | RD << 8| RA << 7 | Z << 4 | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
-    flags = 0
-    flags |= (QR << 15)
-    flags |= (OPCODE << 11)
-    flags |= (AA << 10)
-    flags |= (TC << 9)
-    flags |= (RD << 8)
-    flags |= (RA << 7)
-    flags |= (Z << 4)
-    flags |= RCODE
-
-    header = struct.pack('!HHHHHH', ID, flags, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
-    print("FLAGS HEX:", hex(flags))
+    header = struct.pack('!HHHHHH', ID, QR << 15 | OPCODE << 11 | AA << 10 | TC << 9 | RD << 8| RA << 7 | Z << 4 | RCODE, QDCOUNT, ANCOUNT, NSCOUNT, ARCOUNT)
     # Encode the QNAME
     
         # To do so we need to split the incoming string into parts
